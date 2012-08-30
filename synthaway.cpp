@@ -28,7 +28,7 @@
 #include <clang/Lex/Lexer.h>
 #include <clang/Lex/Preprocessor.h>
 #include <clang/Rewrite/Rewriter.h>
-#include <clang/Tooling/CommandLineClangTool.h>
+#include <clang/Tooling/CommonOptionsParser.h>
 #include <clang/Tooling/Tooling.h>
 #include <llvm/Support/CommandLine.h>
 #include <set>
@@ -460,8 +460,9 @@ public:
 
 
 int main(int argc, const char **argv) {
-  tooling::CommandLineClangTool Tool;
+  tooling::CommonOptionsParser parser(argc, argv);
+  tooling::ClangTool Tool(parser.GetCompilations(),
+      parser.GetSourcePathList());
   llvm::cl::extrahelp H(kMoreHelpText);
-  Tool.initialize(argc, argv);
   return Tool.run(newFrontendActionFactory<SynthesizeRemovalAction>());
 }
