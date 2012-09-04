@@ -27,7 +27,7 @@
 #include <clang/Frontend/FrontendActions.h>
 #include <clang/Lex/Lexer.h>
 #include <clang/Lex/Preprocessor.h>
-#include <clang/Rewrite/Rewriter.h>
+#include <clang/Rewrite/Core/Rewriter.h>
 #include <clang/Tooling/CommonOptionsParser.h>
 #include <clang/Tooling/Tooling.h>
 #include <llvm/Support/CommandLine.h>
