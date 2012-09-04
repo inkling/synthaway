@@ -78,7 +78,7 @@ build directory, and build and install everything:
     cd ../../
     mkdir build-llvm
     cd build-llvm
-    cmake ../llvm
+    cmake -DCMAKE_C_COMPILER:STRING=clang ../llvm
     make
     sudo make install
     
@@ -86,6 +86,11 @@ Depending on your network and machine, it will take on average 30 minutes to
 finish the whole process. You can speed things up by using `make -j2` or
 `make -j4` if you have a multicore CPU. If you have a quad-core i7 CPU, you
 can actually use `-j8` (it has 8 virtual cores).
+
+**Note on the CMake option we use**: We force CMake to use Clang for the C
+compiler because it would by default use gcc, which, depending on
+installation, may not support the compiler option `-Wcovered-switch-default`
+which is used by some source files in LLVM.
 
 
 ### Installing synthaway, Step 3 of 3: Building synthaway
