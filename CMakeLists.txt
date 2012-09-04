@@ -34,7 +34,7 @@ INCLUDE_DIRECTORIES(${LLVM_INCLUDE_DIRS} .)
 LINK_DIRECTORIES(${LLVM_LIBRARY_DIRS})
 LLVM_MAP_COMPONENTS_TO_LIBRARIES(REQ_LLVM_LIBRARIES arminfo cellspuinfo cppbackendinfo debuginfo hexagoninfo mblazeinfo mipsinfo msp430info nvptxinfo powerpcinfo sparcinfo x86info xcoreinfo armdesc cellspudesc hexagondesc mblazedesc mipsdesc msp430desc nvptxdesc powerpcdesc sparcdesc x86desc xcoredesc armasmparser asmparser mblazeasmparser mcparser mipsasmparser x86asmparser)
 
-SET(CLANG_LIBRARIES clangAnalysis clangAST clangBasic clangDriver clangEdit clangFrontend clangLex clangParse clangRewrite clangSema clangSerialization clangTooling)
+SET(CLANG_LIBRARIES clangAnalysis clangAST clangBasic clangDriver clangEdit clangFrontend clangLex clangParse clangRewriteCore clangSema clangSerialization clangTooling)
 
 SET(sources synthaway.cpp)
 ADD_EXECUTABLE (synthaway ${sources})
