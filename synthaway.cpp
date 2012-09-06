@@ -170,6 +170,22 @@ void SynthesizeRemovalConsumer::removeSynthesizeDirectives(DeclContext *DC)
           continue;
         }
 
+        // check if the interface has the attribute
+        // __attribute__((objc_requires_property_definitions)); if yes, the
+        // directive cannot be removed
+        bool attrObjCRequiresPropertyDefs = false;
+        for (auto AI = ID->attr_begin(), AE = ID->attr_end();
+          AI != AE; ++AI) {
+          if ((*AI)->getKind() == attr::ObjCRequiresPropertyDefs) {
+            attrObjCRequiresPropertyDefs = true;
+            break;
+          }
+        }
+
+        if (attrObjCRequiresPropertyDefs) {
+          continue;
+        }
+
         // if there is both a manual getter *and* setter, it's equivalent to
         // a @dynamic, so we have to skip it        
         auto GD = D->getInstanceMethod(PD->getGetterName());
