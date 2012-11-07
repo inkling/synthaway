@@ -1,6 +1,6 @@
-# synthaway: Automatic Removal of @synthesize Directives
+# Synthaway: Automatic Removal of @synthesize Directives
 
-synthaway is a refactoring tool that removes the `@synthesize` directives in
+Synthaway is a refactoring tool that removes the `@synthesize` directives in
 your code base that are no longer needed.
 
 Since Xcode 4.4, when you declare a property in an interface, you don't need
@@ -19,20 +19,20 @@ Removing all those directives may not be trivial if you have a large code
 base. There are a few cases where you can't remove them (more on that below),
 and manually renaming ivars needs careful review lest it break build.
 
-synthaway is designed to automate the process. It only removes a
+Synthaway is designed to automate the process. It only removes a
 `@synthesize` when it's sound to do so, and it guarantees the renamed ivar
 uses are correct.
 
-synthaway is a Clang-based refactoring tool. It accepts both Objective-C and
+Synthaway is a Clang-based refactoring tool. It accepts both Objective-C and
 Objective-C++ source files.
 
 
-## Installing synthaway
+## Installing Synthaway
 
-To use synthaway, you have to build it from source. For that, you'll need
+To use Synthaway, you have to build it from source. For that, you'll need
 the following things:
 
-1. the source code of synthaway
+1. the source code of Synthaway
 2. the latest Xcode (4.4 as of writing)
 3. CMake
 4. the latest Clang *built from source*
@@ -48,7 +48,7 @@ it looks, just follow the guide below and you'll have everything up
 quickly.
 
 
-### Installing synthaway, Step 1 of 3: Getting CMake
+### Installing Synthaway, Step 1 of 3: Getting CMake
 
 [CMake](http://www.cmake.org) is a build tool for many open source software
 projects. It's like the old `./configure; make`, but much faster.
@@ -65,7 +65,7 @@ your MacPorts, then install again:
     sudo port install cmake
 
 
-### Installing synthaway, Step 2 of 3: Getting and Building Clang
+### Installing Synthaway, Step 2 of 3: Getting and Building Clang
 
 The definitive guide of getting and installing Clang is of course on
 [clang.llvm.org](http://clang.llvm.org/get_started.html). You can also take
@@ -93,10 +93,10 @@ installation, may not support the compiler option `-Wcovered-switch-default`
 which is used by some source files in LLVM.
 
 
-### Installing synthaway, Step 3 of 3: Building synthaway
+### Installing Synthaway, Step 3 of 3: Building Synthaway
 
-Once you have CMake and Clang in place, building synthaway is easy. Assuming
-you are already in synthaway's working directory:
+Once you have CMake and Clang in place, building Synthaway is easy. Assuming
+you are already in Synthaway's working directory:
 
     mkdir build
     cd build/
@@ -117,27 +117,27 @@ run cmake, but it should be the same directory you've install the Clang that
 you just built.
 
 Also, it's not really necessary to have a `build` directory, and you can
-just run `cmake .` inside the source directory of synthaway. But it's a good
+just run `cmake .` inside the source directory of Synthaway. But it's a good
 practice for using CMake. The advantage is that, if anything goes bad, you
 can just zap the whole `build` directory.
 
-Now, if you have followed our instructions thus far, the binary of synthaway
+Now, if you have followed our instructions thus far, the binary of Synthaway
 should be now residing in `/usr/local/bin` at your disposal.
 
-If you want to hack on synthaway, the next time you want to compile it, you
+If you want to hack on Synthaway, the next time you want to compile it, you
 can just use `make -C ./build/`.
 
 That's it. Now we can start removing some unwanted `@synthesize` directives!
 
 
-## Using synthaway
+## Using Synthaway
 
-You can use synthaway to refactor a single `.m` or `.mm` file. The format
+You can use Synthaway to refactor a single `.m` or `.mm` file. The format
 is as follows:
 
-    synthaway <source file> -- <compiler> [compiler options]
+    Synthaway <source file> -- <compiler> [compiler options]
 
-For example, if you have the synthaway binary in the current working
+For example, if you have the Synthaway binary in the current working
 directory, and you want to refactor the `foo.m` in the `tests/` directory:
 
     synthaway tests/foo.m -- clang -c
@@ -153,8 +153,8 @@ example, the backup file will be `tests/foo.m.bak`.
 
 ## Batch Refactoring Your Code Base
 
-synthaway is also capable of batch refactoring. Clang-based refactoring tools
-like synthaway recognizes a file called `compile_commands.json`, in which you
+Synthaway is also capable of batch refactoring. Clang-based refactoring tools
+like Synthaway recognizes a file called `compile_commands.json`, in which you
 can specify the files and their respective compiler commands in your project.
 That JSON file is also called a compilation database.
 
@@ -178,11 +178,11 @@ the tool, you can just throw the files at it:
 
 ### Current Limitation: No Prefix Header Support
 
-Currently precompiled headers are not supported by synthaway. The 
+Currently precompiled headers are not supported by Synthaway. The 
 extraction script `extract-xcodebuild-log` will actually remove prefix header
 uses.
 
-This also means that if your source files relies on prefix header, synthaway
+This also means that if your source files relies on prefix header, Synthaway
 will not be able to refactor them. Usually this can be easily fixed by adding
 `#import <UIKit/UIKit.h>` or `#import <Cocoa/Cocoa.h>` to the affected files.
 
@@ -190,7 +190,7 @@ will not be able to refactor them. Usually this can be easily fixed by adding
 hacking. A sketch is provided in the "Using Prefix Headers" appendix.
 
 
-## How synthaway Works
+## How Synthaway Works
 
 A `@synthesize` is removed if all of the following conditions are met:
 
@@ -202,7 +202,7 @@ A `@synthesize` is removed if all of the following conditions are met:
     underscore prefix to the ivar name
 
 If a removed `@synthesize` directive has only the form `@synthesize x;`,
-synthaway will also rename all references to the ivar `x` and change them
+Synthaway will also rename all references to the ivar `x` and change them
 to use `_x`.
 
 In the following example, the `@synthesize` for `b` and `c` will be removed,
@@ -259,7 +259,7 @@ ivar `b` will be renamed to `_b`. So the `-dealloc` method now becomes:
 
 ### Repeatedly Refactoring the Same Source File
 
-Once a source file is refactored by synthaway, any `@synthesize` directive
+Once a source file is refactored by Synthaway, any `@synthesize` directive
 that can be removed is removed. Therefore repeatedly refactoring the same
 file has no further effect. In more technical terms, the refactoring transform
 is said to have reached a fixed point.
@@ -272,11 +272,11 @@ remove that flag after refactoring.
 
 ### Current Limitation: No Compound `@synthesis` Directives
 
-Currently synthaway does not handle compound `@synthesis` directives:
+Currently Synthaway does not handle compound `@synthesis` directives:
 
     @synthesis a = _a, b, c, d = _d;
     
-To make synthaway work, rewrite compound directives into separate ones:
+To make Synthaway work, rewrite compound directives into separate ones:
 
     @synthesis a = _a;
     @synthesis b;
@@ -304,7 +304,7 @@ ones become a very useful indicator. It may tell you:
 *   That you have some synthesized properties with different ivar names
     (e.g. `@synthesize text = _bodyText;`)
 *   That you have defined some ivars in the interface: you can remove them
-    and feed the source file again to synthaway if you only target iOS
+    and feed the source file again to Synthaway if you only target iOS
     or 64-bit Mac
 
 They may also reveal some potential issues. For example:
@@ -317,7 +317,7 @@ They may also reveal some potential issues. For example:
     @synthesize style;
     @end
     
-synthaway will not remove the `@synthesize` for you, because `UITextField`
+Synthaway will not remove the `@synthesize` for you, because `UITextField`
 also has a private ivar called `_style`!
 
 Another subtlety (and less of a problem) is when you have overridden a
@@ -356,7 +356,7 @@ property, but the superclass does not have an ivar backing:
 
 In this case, the `@synthesize` in `MySpecialViewController` cannot be
 removed, because the ivar `_extraView` does not exist in the base class
-in the first place. As a general rule, synthaway is conservative: it will
+in the first place. As a general rule, Synthaway is conservative: it will
 not remove any `@synthesize` for overriding properties.
 
 
@@ -364,9 +364,9 @@ not remove any `@synthesize` for overriding properties.
 
 Say your project is built with Xcode 4.4, which comes with its own Clang
 installation. Its version is different from the one we built ourselves.
-Because of the version difference, synthaway is not able to refactor files
+Because of the version difference, Synthaway is not able to refactor files
 that rely on prefix headers. That is, if a file doesn't not `#import` all
-the headers it needs, synthaway will report error on that file.
+the headers it needs, Synthaway will report error on that file.
 
 It's actually possible to use prefix headers. It requires some manual
 intervention, therefore we only provide a sketch here.
@@ -383,7 +383,7 @@ After you cleaned them up, copy the command a few lines below the
 `ProcessPCH` marker (it'll be an invocation of Clang inside `Xcode.app`),
 replace the clang command with something like `/usr/local/bin/clang`. Run
 the whole command, and now you'll have the precompiled headers built with
-the same version of Clang that synthaway is based on.
+the same version of Clang that Synthaway is based on.
 
 One last step is to modify `extract-xcodebuild-log` and replace this line:
 
@@ -395,7 +395,7 @@ with this line:
 
 This causes the script to keep the prefix header options when it extracts
 compiler commands from your build log. Run your modified script (note: not
-in `/usr/local/bin`) to generate the `compile_commands.json`. Now synthaway
+in `/usr/local/bin`) to generate the `compile_commands.json`. Now Synthaway
 will be able to refactor those source files.    
 
 
@@ -418,7 +418,7 @@ limitations under the License.
 
 ## Acknowledgments
 
-A part of synthaway is based on
+A part of Synthaway is based on
 [Refactorial](https://github.com/lukhnos/refactorial), a refactoring tool by
 Lukhnos Liu and Thomas Minor. The CMake build script, the utility methods in
 class `SynthesizeRemovalConsumer`, and the writing out of the rewriter buffer
