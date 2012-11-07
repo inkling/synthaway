@@ -33,6 +33,8 @@
 #include <llvm/Support/CommandLine.h>
 #include <set>
 
+#pragma clang diagnostic ignored "-Wc++11-extensions"
+
 using namespace clang;
 using namespace clang::tooling;
 
