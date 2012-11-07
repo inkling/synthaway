@@ -103,9 +103,6 @@ you are already in synthaway's working directory:
     cmake ../
     make
     
-If you see linker warnings at the end of the build process, you can safely
-ignore them.
-
 You may also want to run some tests too:
 
     make test
