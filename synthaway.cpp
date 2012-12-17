@@ -20,6 +20,7 @@
 #include <clang/AST/ASTConsumer.h>
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/ASTContext.h>
+#include <clang/AST/Attr.h>
 #include <clang/AST/DeclObjc.h>
 #include <clang/AST/ExprObjc.h>
 #include <clang/AST/Stmt.h>
@@ -479,8 +480,8 @@ public:
 
 int main(int argc, const char **argv) {
   tooling::CommonOptionsParser parser(argc, argv);
-  tooling::ClangTool Tool(parser.GetCompilations(),
-      parser.GetSourcePathList());
+  tooling::ClangTool Tool(parser.getCompilations(),
+      parser.getSourcePathList());
   llvm::cl::extrahelp H(kMoreHelpText);
   return Tool.run(newFrontendActionFactory<SynthesizeRemovalAction>());
 }
