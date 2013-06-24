@@ -33,7 +33,7 @@ To use Synthaway, you have to build it from source. For that, you'll need
 the following things:
 
 1. the source code of Synthaway
-2. the latest Xcode (4.4 as of writing)
+2. the latest Xcode (4.5 as of writing)
 3. CMake
 4. the latest Clang *built from source*
 
@@ -362,7 +362,7 @@ not remove any `@synthesize` for overriding properties.
 
 ## Appendix: Using Prefix Headers
 
-Say your project is built with Xcode 4.4, which comes with its own Clang
+Say your project is built with Xcode 4.5, which comes with its own Clang
 installation. Its version is different from the one we built ourselves.
 Because of the version difference, Synthaway is not able to refactor files
 that rely on prefix headers. That is, if a file doesn't not `#import` all
