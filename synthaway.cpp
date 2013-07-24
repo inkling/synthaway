@@ -102,7 +102,7 @@ void SynthesizeRemovalConsumer::HandleTranslationUnit(ASTContext &C)
   std::string backupFilename = std::string(F->getName()) + ".bak";
   std::string errInfo;
   llvm::raw_fd_ostream backupStream(backupFilename.c_str(), errInfo,
-    llvm::raw_fd_ostream::F_Binary);
+    llvm::sys::fs::F_Binary);
   if (!errInfo.empty()) {
     llvm::errs() << "Cannot write backup file: " << backupFilename <<
       ", error info: " << errInfo << "\n";
@@ -113,7 +113,7 @@ void SynthesizeRemovalConsumer::HandleTranslationUnit(ASTContext &C)
 
   // write the output
   llvm::raw_fd_ostream outStream(F->getName(), errInfo,
-    llvm::raw_fd_ostream::F_Binary);
+    llvm::sys::fs::F_Binary);
   if (!errInfo.empty()) {
     llvm::errs() << "Cannot write output file: " << F->getName() <<
       ", error info: " << errInfo << "\n";
