@@ -156,15 +156,7 @@ void SynthesizeRemovalConsumer::removeSynthesizeDirectives(DeclContext *DC)
         if (P->getPropertyImplementation() == ObjCPropertyImplDecl::Dynamic) {
           continue;
         }
-        
-        // if the ivar is not declared in the place where @synthesize is
-        // (i.e. it is backed by some real ivar declared in @interface),
-        // don't remove it
-        auto PID = P->getPropertyIvarDecl();
-        if (P->getPropertyIvarDeclLoc() != PID->getLocation()) {
-          continue;
-        }
-        
+
         // get the context in which the @property resides
         auto PD = P->getPropertyDecl();
         auto PDC = PD->getDeclContext();
@@ -242,6 +234,7 @@ void SynthesizeRemovalConsumer::removeSynthesizeDirectives(DeclContext *DC)
             
         // check if the synthesized ivar name is not the same
         // as the property's name plus underscore              
+        auto PID = P->getPropertyIvarDecl();
         std::string PIDN = PID->getNameAsString();
         std::string PDN = PD->getNameAsString();
               
@@ -281,6 +274,31 @@ void SynthesizeRemovalConsumer::removeSynthesizeDirectives(DeclContext *DC)
         
         if (isOverridingProperty) {
           continue;
+        }
+
+        // if the ivar is not declared in the place where @synthesize is
+        // (i.e. it is backed by some real ivar declared in @interface),
+        // remove the declaration in the header
+        if (P->getPropertyIvarDeclLoc() != PID->getLocation()) {
+
+            // SR is the range of the decl in the @interface
+            auto SR = PID->getSourceRange();
+
+            // seek past the end (i.e. EL will include the semicolon)
+            SourceLocation EL = Lexer::findLocationAfterToken(SR.getEnd(),
+              tok::semi, astContext->getSourceManager(),
+              astContext->getLangOpts(), false);
+
+            // record the FileID
+            SourceManager &SM = astContext->getSourceManager();
+            FullSourceLoc FSL(PID->getLocation(), SM);
+            fileIDSet.insert(FSL.getFileID());
+
+            // remove the decl in @interface
+            Rewriter::RewriteOptions RO;
+            RO.RemoveLineIfEmpty = true;
+            SourceRange RSR(SR.getBegin(), EL);
+            rewriter.RemoveText(RSR, RO);
         }
 
         // do the removal: record the removed directive
