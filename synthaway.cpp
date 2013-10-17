@@ -61,6 +61,7 @@ protected:
   
   std::set<ObjCPropertyImplDecl *> removeSet;
   std::set<Expr *> renameSet;
+  std::set<FileID> fileIDSet;
   
 protected:
   // utility methods
@@ -95,34 +96,41 @@ void SynthesizeRemovalConsumer::HandleTranslationUnit(ASTContext &C)
   }
 
   SourceManager &SM = rewriter.getSourceMgr();
-  FileID FID = SM.getMainFileID();
-  const FileEntry* F = SM.getFileEntryForID(FID);
-  
-  // backup the source
-  std::string backupFilename = std::string(F->getName()) + ".bak";
-  std::string errInfo;
-  llvm::raw_fd_ostream backupStream(backupFilename.c_str(), errInfo,
-    llvm::sys::fs::F_Binary);
-  if (!errInfo.empty()) {
-    llvm::errs() << "Cannot write backup file: " << backupFilename <<
-      ", error info: " << errInfo << "\n";
-    return;
-  }
-  backupStream << SM.getBufferData(FID);
-  backupStream.flush();
 
-  // write the output
-  llvm::raw_fd_ostream outStream(F->getName(), errInfo,
-    llvm::sys::fs::F_Binary);
-  if (!errInfo.empty()) {
-    llvm::errs() << "Cannot write output file: " << F->getName() <<
-      ", error info: " << errInfo << "\n";
-    return;
-  }
+  // put the main file id in the set to guarantee it'll be used
+  fileIDSet.insert(SM.getMainFileID());
+
+  for (auto FI = fileIDSet.begin(), FE = fileIDSet.end() ; FI != FE ; ++FI) {
+    FileID FID = *FI;
+    const FileEntry* F = SM.getFileEntryForID(FID);
     
-  const RewriteBuffer *RB = rewriter.getRewriteBufferFor(FID);
-  RB->write(outStream);
-  outStream.flush();
+    // backup the source
+    std::string backupFilename = std::string(F->getName()) + ".bak";
+    std::string errInfo;
+    llvm::raw_fd_ostream backupStream(backupFilename.c_str(), errInfo,
+      llvm::sys::fs::F_Binary);
+    if (!errInfo.empty()) {
+      llvm::errs() << "Cannot write backup file: " << backupFilename <<
+        ", error info: " << errInfo << "\n";
+      return;
+    }
+    backupStream << SM.getBufferData(FID);
+    backupStream.flush();
+
+    // write the output
+    llvm::raw_fd_ostream outStream(F->getName(), errInfo,
+      llvm::sys::fs::F_Binary);
+    if (!errInfo.empty()) {
+      llvm::errs() << "Cannot write output file: " << F->getName() <<
+        ", error info: " << errInfo << "\n";
+      return;
+    }
+
+    const RewriteBuffer *RB = rewriter.getRewriteBufferFor(FID);
+    RB->write(outStream);
+    outStream.flush();
+
+  }
 }
 
 void SynthesizeRemovalConsumer::removeSynthesizeDirectives(DeclContext *DC)
