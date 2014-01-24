@@ -479,7 +479,9 @@ public:
 
 
 int main(int argc, const char **argv) {
-  tooling::CommonOptionsParser parser(argc, argv);
+  static llvm::cl::OptionCategory ToolOptions("Tool for removing synthesization from objective-c files");
+
+  tooling::CommonOptionsParser parser(argc, argv, ToolOptions);
   tooling::ClangTool Tool(parser.getCompilations(),
       parser.getSourcePathList());
   llvm::cl::extrahelp H(kMoreHelpText);
