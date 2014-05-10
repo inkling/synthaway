@@ -32,12 +32,19 @@
 #include <clang/Tooling/CommonOptionsParser.h>
 #include <clang/Tooling/Tooling.h>
 #include <llvm/Support/CommandLine.h>
+#include <llvm/Config/config.h>
 #include <set>
 
 #pragma clang diagnostic ignored "-Wc++11-extensions"
 
 using namespace clang;
 using namespace clang::tooling;
+
+#if (LLVM_VERSION_MAJOR == 3) && (LLVM_VERSION_MINOR >= 5)
+static const llvm::sys::fs::OpenFlags BinaryOpenFlags = llvm::sys::fs::F_None;
+#else
+static const llvm::sys::fs::OpenFlags BinaryOpenFlags = llvm::sys::fs::F_Binary;
+#endif
 
 static const char *kMoreHelpText = 
   "\tSee README.markdown for details.\n"
@@ -102,7 +109,7 @@ void SynthesizeRemovalConsumer::HandleTranslationUnit(ASTContext &C)
   std::string backupFilename = std::string(F->getName()) + ".bak";
   std::string errInfo;
   llvm::raw_fd_ostream backupStream(backupFilename.c_str(), errInfo,
-    llvm::sys::fs::F_Binary);
+    BinaryOpenFlags);
   if (!errInfo.empty()) {
     llvm::errs() << "Cannot write backup file: " << backupFilename <<
       ", error info: " << errInfo << "\n";
@@ -113,7 +120,7 @@ void SynthesizeRemovalConsumer::HandleTranslationUnit(ASTContext &C)
 
   // write the output
   llvm::raw_fd_ostream outStream(F->getName(), errInfo,
-    llvm::sys::fs::F_Binary);
+    BinaryOpenFlags);
   if (!errInfo.empty()) {
     llvm::errs() << "Cannot write output file: " << F->getName() <<
       ", error info: " << errInfo << "\n";
